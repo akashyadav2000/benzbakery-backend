@@ -18,11 +18,10 @@ const RegistrationSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now // Use the server's current time
+    default: Date.now
   }
 });
 
-// Ensure index for email is unique
 RegistrationSchema.index({ email: 1 }, { unique: true });
 
 const RegistrationModel = mongoose.model("registration", RegistrationSchema);

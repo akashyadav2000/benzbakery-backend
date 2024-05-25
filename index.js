@@ -11,16 +11,16 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect(process.env.MONGO_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  poolSize: 10,
-}).then(() => {
-  console.log("Connected to MongoDB Atlas");
-}).catch(err => {
-  console.error("Failed to connect to MongoDB", err);
-});
-
+// mongoose.connect(process.env.MONGO_URL, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+//   poolSize: 10,
+// }).then(() => {
+//   console.log("Connected to MongoDB Atlas");
+// }).catch(err => {
+//   console.error("Failed to connect to MongoDB", err);
+// });
+mongoose.connect(process.env.MONG0_URL);
 app.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
 

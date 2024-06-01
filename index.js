@@ -36,7 +36,7 @@ app.post("/login", (req, res) => {
           // Return user details on successful login
           res.json({ status: "Success", user: { name: user.name, email: user.email } });
         } else {
-          res.status(400).json("The password is incorrect");
+          res.status(400).json("Password is incorrect");
         }
       } else {
         res.status(400).json("Email was not registered");

@@ -25,6 +25,8 @@ app.post("/signup", async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    console.log('Signup request received:', req.body);
+
     const user = await RegistrationModel.findOne({ email });
     if (user) {
       return res.status(400).json({ message: "Email is already registered" });
@@ -36,7 +38,8 @@ app.post("/signup", async (req, res) => {
 
     res.json(savedUser);
   } catch (err) {
-    res.status(500).json(err.message);
+    console.error('Error in /signup route:', err); // Log the error
+    res.status(500).json({ message: 'Internal Server Error', error: err.message });
   }
 });
 

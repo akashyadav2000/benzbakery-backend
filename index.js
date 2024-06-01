@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
-require('dotenv').config()
+const bcrypt = require("bcrypt");
+require('dotenv').config();
 const cors = require("cors");
 const RegistrationModel = require("./models/Registration");
 const FeedbackModel = require("./models/Feedback");
@@ -10,43 +11,58 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect(process.env.MONG0_URL);
-
-app.post("/signup", (req, res) => {
-  const { email } = req.body;
-  RegistrationModel.findOne({ email })
-    .then((user) => {
-      if (user) {
-        res.status(400).json({ message: "Email is already registered" });
-      } else {
-        RegistrationModel.create(req.body)
-          .then((user) => res.json(user))
-          .catch((err) => res.status(500).json(err.message));
-      }
-    })
-    .catch((err) => res.status(500).json(err.message));
+mongoose.connect(process.env.MONGO_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  poolSize: 10 // Connection pooling for better performance
+}).then(() => {
+  console.log('Connected to MongoDB');
+}).catch(err => {
+  console.error('Error connecting to MongoDB', err);
 });
 
-app.post("/login", (req, res) => {
+app.post("/signup", async (req, res) => {
   const { email, password } = req.body;
-  RegistrationModel.findOne({ email })
-    .then(user => {
-      if (user) {
-        if (user.password === password) {
-          // Return user details on successful login
-          res.json({ status: "Success", user: { name: user.name, email: user.email } });
-        } else {
-          res.status(400).json("The password is incorrect");
-        }
-      } else {
-        res.status(400).json("Email was not registered");
-      }
-    })
-    .catch(err => res.status(500).json(err.message));
+
+  try {
+    const user = await RegistrationModel.findOne({ email });
+    if (user) {
+      return res.status(400).json({ message: "Email is already registered" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new RegistrationModel({ ...req.body, password: hashedPassword });
+    const savedUser = await newUser.save();
+
+    res.json(savedUser);
+  } catch (err) {
+    res.status(500).json(err.message);
+  }
+});
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await RegistrationModel.findOne({ email });
+    if (!user) {
+      return res.status(400).json("Email was not registered");
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json("The password is incorrect");
+    }
+
+    res.json({ status: "Success", user: { name: user.name, email: user.email } });
+  } catch (err) {
+    res.status(500).json(err.message);
+  }
 });
 
 app.post("/feedback", async (req, res) => {
   const { name, email, productName, message } = req.body;
+
   try {
     const newFeedback = new FeedbackModel({ name, email, productName, message });
     const feedback = await newFeedback.save();
@@ -56,21 +72,23 @@ app.post("/feedback", async (req, res) => {
   }
 });
 
-app.post("/newsLetter", (req, res) => {
+app.post("/newsLetter", async (req, res) => {
   const { email } = req.body;
-  NewsletterModel.findOne({ email })
-    .then((user) => {
-      if (user) {
-        res.status(400).json({ message: "You're already on our list" });
-      } else {
-        NewsletterModel.create(req.body)
-          .then((user) => res.json(user))
-          .catch((err) => res.status(500).json(err.message));
-      }
-    })
-    .catch((err) => res.status(500).json(err.message));
-});
 
+  try {
+    const user = await NewsletterModel.findOne({ email });
+    if (user) {
+      return res.status(400).json({ message: "You're already on our list" });
+    }
+
+    const newUser = new NewsletterModel(req.body);
+    const savedUser = await newUser.save();
+
+    res.json(savedUser);
+  } catch (err) {
+    res.status(500).json(err.message);
+  }
+});
 
 app.listen(3001, () => {
   console.log("Server is running on port 3001");

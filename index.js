@@ -59,6 +59,7 @@ app.post("/login", async (req, res) => {
 
     res.json({ status: "Success", user: { name: user.name, email: user.email } });
   } catch (err) {
+    console.error('Error in /login route:', err); // Log the error
     res.status(500).json(err.message);
   }
 });
@@ -71,6 +72,7 @@ app.post("/feedback", async (req, res) => {
     const feedback = await newFeedback.save();
     res.json({ status: "Success", feedback });
   } catch (err) {
+    console.error('Error in /feedback route:', err); // Log the error
     res.status(500).json(err.message);
   }
 });
@@ -89,6 +91,7 @@ app.post("/newsLetter", async (req, res) => {
 
     res.json(savedUser);
   } catch (err) {
+    console.error('Error in /newsLetter route:', err); // Log the error
     res.status(500).json(err.message);
   }
 });

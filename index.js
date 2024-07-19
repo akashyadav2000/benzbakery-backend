@@ -12,6 +12,10 @@ app.use(cors());
 
 mongoose.connect(process.env.MONG0_URL);
 
+app.get("/", (req, res) => {
+  res.send("server working");
+});
+
 app.post("/signup", (req, res) => {
   const { email } = req.body;
   RegistrationModel.findOne({ email })
@@ -74,5 +78,4 @@ app.post("/newsLetter", (req, res) => {
 
 app.listen(3001, (req, res) => {
   console.log("Server is running on port 3001");
-  res.send({ "server": "running" })
 });

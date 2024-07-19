@@ -72,6 +72,7 @@ app.post("/newsLetter", (req, res) => {
 });
 
 
-app.listen(3001, () => {
+app.listen(3001, (req, res) => {
   console.log("Server is running on port 3001");
+  res.send({ "server": "running" })
 });

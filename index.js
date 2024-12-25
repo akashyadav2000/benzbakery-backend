@@ -102,7 +102,7 @@ app.post("/newsLetter", (req, res) => {
 });
 
 // Purchase History Routes
-// Add purchase history
+// Add Purchase History
 app.post("/purchase-history", async (req, res) => {
   const { userId, items, totalAmount } = req.body;
 
@@ -115,12 +115,12 @@ app.post("/purchase-history", async (req, res) => {
   }
 });
 
-// Get purchase history for a specific user
+// Get Purchase History for a Specific User
 app.get("/purchase-history/:userId", async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const purchaseHistory = await PurchaseHistoryModel.find({ userId }).populate("userId", "name email");
+    const purchaseHistory = await PurchaseHistoryModel.find({ userId });
     res.json({ status: "Success", purchaseHistory });
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -6,7 +6,7 @@ const Razorpay = require("razorpay");
 const RegistrationModel = require("./models/Registration");
 const FeedbackModel = require("./models/Feedback");
 const NewsletterModel = require("./models/Newsletter");
-const PurchaseHistoryModel = require("./models/PurchaseHistory"); // Import the PurchaseHistory model
+
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -99,32 +99,6 @@ app.post("/newsLetter", (req, res) => {
       }
     })
     .catch((err) => res.status(500).json(err.message));
-});
-
-// Purchase History Routes
-// Add Purchase History
-app.post("/purchase-history", async (req, res) => {
-  const { userId, items, totalAmount } = req.body;
-
-  try {
-    const newPurchase = new PurchaseHistoryModel({ userId, items, totalAmount });
-    const savedPurchase = await newPurchase.save();
-    res.json({ status: "Success", purchase: savedPurchase });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Get Purchase History for a Specific User
-app.get("/purchase-history/:userId", async (req, res) => {
-  const { userId } = req.params;
-
-  try {
-    const purchaseHistory = await PurchaseHistoryModel.find({ userId });
-    res.json({ status: "Success", purchaseHistory });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
 });
 
 // Start the server

@@ -18,7 +18,7 @@ const razorpay = new Razorpay({
 });
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONG0_URL);
+mongoose.connect(process.env.MONGO_URL);
 
 // Routes
 app.get("/", (req, res) => {
